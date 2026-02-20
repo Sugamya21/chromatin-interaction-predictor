@@ -1,0 +1,58 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chromatin Interaction Predictor</title>
+    <style>
+        body { font-family: Arial; padding: 20px; max-width: 650px; margin: auto; }
+        input, button { width: 100%; padding: 10px; margin: 5px 0; }
+        .result { margin-top: 20px; font-size: 18px; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<h2>Chromatin Interaction Predictor</h2>
+
+<h4>Promoter Region</h4>
+<input id="p_chr" placeholder="Promoter Chromosome (e.g., chr1)" />
+<input id="p_start" type="number" placeholder="Promoter Start" />
+<input id="p_end" type="number" placeholder="Promoter End" />
+
+<h4>Interactor Region</h4>
+<input id="i_chr" placeholder="Interactor Chromosome (e.g., chr1)" />
+<input id="i_start" type="number" placeholder="Interactor Start" />
+<input id="i_end" type="number" placeholder="Interactor End" />
+
+<button onclick="predict()">Predict</button>
+
+<div id="result" class="result"></div>
+
+<script>
+async function predict() {
+    const body = {
+        promoter_chr: document.getElementById("p_chr").value,
+        promoter_start: parseInt(document.getElementById("p_start").value),
+        promoter_end: parseInt(document.getElementById("p_end").value),
+        interactor_chr: document.getElementById("i_chr").value,
+        interactor_start: parseInt(document.getElementById("i_start").value),
+        interactor_end: parseInt(document.getElementById("i_end").value),
+    };
+
+    const res = await fetch("https://chromatin-interaction-predictor.onrender.com/predict", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body)
+    });
+
+    const data = await res.json();
+    if (data.error) {
+        document.getElementById("result").innerText = "Error: " + data.error;
+    } else {
+        document.getElementById("result").innerText =
+            "Probability: " + data.probability + " (" + data.prediction + ")";
+    }
+}
+</script>
+
+</body>
+</html>
